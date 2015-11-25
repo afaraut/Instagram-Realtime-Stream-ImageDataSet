@@ -1,0 +1,15 @@
+{
+    "name": "InstagramRealTimeStreamImageDataset",
+    "version": "0.0.1",
+    "description": "Instagram Real Time Stream ImageDataset",
+    "author": "Anthony FARAUT",
+    "dependencies": {
+        "express": "3.5.1",
+        "instagram-node-lib": "~0.1.1",
+        "mongodb" : "2.0.49"
+    },
+    "engines": {
+        "node": "0.10.24",
+        "npm": "1.2.30"
+    }
+}
