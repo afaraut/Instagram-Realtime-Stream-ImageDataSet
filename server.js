@@ -71,17 +71,21 @@ app.post('/callback', function(req, res) {
                 for (var i=0; i<40; i++) {
                     var info = JSON.parse(raw).data[i];
                     if (info != undefined){
-                        var url = info[info.type + "s"].standard_resolution.url;
+                        var url = info["images"].standard_resolution.url;
                         var path = settings.mainDirectory + settings.directory + info.id + '.' + url.split('.').pop();
-
                         if (!fs.existsSync(path)) {
                             
                             // Warning ! Be careful !! 
                             // It's important to save the picure, because in the next loop iteration, I will check if the file is already saved
                             // If It's not, I will save it and store the data into the database
                             // If It's already saved, I have nothing to do !
-                            saveJSONfile(info.id, info);
-                            download_file_httpget(url, path);
+                            saveJSONfile(info.id, info); // Save json info file
+                            download_file_httpget(url, path); // Download the image
+                            if (info.type == "video"){
+                                var urlVideo = info["videos"].standard_resolution.url;
+                                var pathVideo = settings.mainDirectory + settings.directory + info.id + '.' + urlVideo.split('.').pop();
+                                download_file_httpget(urlVideo, pathVideo); // Download the video if exists
+                            }
 
                             (function(jsonTweet) {
                                 MongoClient.connect(settings.mongoDBURL, info, function(err, db) {
@@ -94,12 +98,8 @@ app.post('/callback', function(req, res) {
                                         });
                                     }
                                 });
-                            })(info); 
+                            })(info);
                         }
-
-                        // De base le path sera celui de l'image
-                        // Si on voit que info type est video alors on fait une requette en plus pour la vidéo
-
                     }
                 }
             });
