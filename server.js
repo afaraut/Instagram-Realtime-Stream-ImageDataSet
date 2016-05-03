@@ -71,8 +71,8 @@ app.post('/callback', function(req, res) {
                 for (var i=0; i<40; i++) {
                     var info = JSON.parse(raw).data[i];
                     if (info != undefined){
-                        var url = info["images"].standard_resolution.url;
-                        var path = settings.mainDirectory + settings.directory + info.id + '.' + url.split('.').pop();
+                        var imgUrl = info["images"].standard_resolution.url;
+                        var path = settings.mainDirectory + settings.directory + info.id + '.' + (url.parse(imgUrl).pathname).split('.').pop();
                         if (!fs.existsSync(path)) {
                             
                             // Warning ! Be careful !! 
@@ -80,13 +80,13 @@ app.post('/callback', function(req, res) {
                             // If It's not, I will save it and store the data into the database
                             // If It's already saved, I have nothing to do !
                             saveJSONfile(info.id, info); // Save json info file
-                            download_file_httpget(url, path); // Download the image
+                            download_file_httpget(imgUrl, path); // Download the image
                             if (info.type == "video"){
                                 var urlVideo = info["videos"].standard_resolution.url;
                                 var pathVideo = settings.mainDirectory + settings.directory + info.id + '.' + urlVideo.split('.').pop();
                                 download_file_httpget(urlVideo, pathVideo); // Download the video if exists
                             }
-
+    
                             (function(jsonTweet) {
                                 MongoClient.connect(settings.mongoDBURL, info, function(err, db) {
                                     //assert.equal(null, err);
